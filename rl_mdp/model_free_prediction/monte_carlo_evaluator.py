@@ -57,4 +57,18 @@ class MCEvaluator(AbstractEvaluator):
 
         :param episode: A list of (state, action, reward) tuples.
         """
-        pass
+        G = 0
+        visited = set()
+
+        for t in range(len(episode)):
+            state, _, _ = episode[t]
+
+            if state not in visited:
+                visited.add(state)
+
+                G = 0
+                for i, (_, _, r) in enumerate(episode[t:]):
+                    G += (self.env.discount_factor ** i) * r
+
+                self.returns[state].append(G)
+                self.value_fun[state] = np.mean(self.returns[state])

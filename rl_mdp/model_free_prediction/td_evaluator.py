@@ -38,4 +38,12 @@ class TDEvaluator(AbstractEvaluator):
         Runs a single episode using the TD(0) method to update the value function.
         :param policy: A policy object that provides action probabilities for each state.
         """
-        pass
+        state = self.env.reset()
+        done = False
+
+        while not done:
+            action = policy.sample_action(state)
+            next, reward, done = self.env.step(action)
+            td_error = (reward + self.env.discount_factor * self.value_fun[next]) - self.value_fun[state]
+            self.value_fun[state] += self.alpha * td_error
+            state = next
